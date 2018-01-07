@@ -14,7 +14,10 @@ import sys
 
 password_file = os.path.join(os.path.expanduser("~"), 'ls-passwords.yml')
 
-chromedriver = os.path.join(os.path.expanduser("~"), 'chromedriver.exe')
+if os.name == 'nt':
+    chromedriver = os.path.join(os.path.expanduser("~"), 'chromedriver.exe')
+else:
+    chromedriver = os.path.join(os.path.expanduser("~"), 'chromedriver')
 
 if os.path.isfile(password_file):
     with open(password_file, 'r') as fp:

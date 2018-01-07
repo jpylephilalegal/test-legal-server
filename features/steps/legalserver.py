@@ -6,10 +6,12 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support.select import Select
 import time
 import os
 import re
 import sys
+import csv
 
 @step('I log in to "?([^ "]+)"? as "?([^ "]+)"?')
 def login(step, server, username):
@@ -54,7 +56,7 @@ def click_menu_link(step, value):
 def do_upload(step, value):
     elem = world.browser.find_element_by_xpath("//input[@type='file']")
     elem.clear()
-    elem.send_keys(os.getcwd() + "/" + value)
+    elem.send_keys(os.path.join(os.getcwd(), value))
 
 @step('I set the text area to "([^"]*)"')
 def set_text_area(step, value):
@@ -77,7 +79,14 @@ def wait_forever(step):
 
 @step('I click the button "([^"]+)"')
 def click_button(step, button_name):
-    world.browser.find_element_by_xpath('//button[text()="' + button_name + '"]').click()
+    try:
+        elem = world.browser.find_element_by_xpath('//button[text()="' + button_name + '"]')
+    except:
+        try:
+            elem = world.browser.find_element_by_xpath('//input[@type = "submit" and @value = "' + button_name + '"]')
+        except:
+            elem = world.browser.find_element_by_xpath('//input[@type = "button" and @value = "' + button_name + '"]')
+    elem.click()
     world.browser.wait_for_it()
 
 @step('I click the link "([^"]+)"')
@@ -141,8 +150,18 @@ def wait_seconds(step, seconds):
 
 @step('I should see that "([^"]+)" is "([^"]+)"')
 def value_of_field(step, label, value):
-    elem = world.browser.find_element_by_id(world.browser.find_element_by_xpath('//label[text()="' + label + '"]').get_attribute("for"))
-    assert elem.get_attribute("value") == value
+    try:
+        elem = world.browser.find_element_by_id(world.browser.find_element_by_xpath('//label[text()="' + label + '"]').get_attribute("for"))
+    except:
+        elem = world.browser.find_element_by_id(world.browser.find_element_by_xpath('//a[text()="' + label + '"]/ancestor::label').get_attribute("for"))
+    if elem.tag_name in ('span', 'a', 'button', 'div'):
+        assert elem.text == value
+    elif elem.tag_name in ('select'):
+        select = Select(elem)
+        selected_option = select.first_selected_option
+        assert selected_option.text == value
+    else:
+        assert elem.get_attribute("value") == value
 
 @step('I set the text box to "([^"]*)"')
 def set_text_box(step, value):
@@ -179,3 +198,21 @@ def exit_button(step, button_name):
     world.browser.find_element_by_xpath('//button[text()="' + button_name + '"]').click()
     time.sleep(1.0)
 
+@step('I run "([^"]+)" using "([^"]+)"')
+def template_apply(step, templatefilename, datafilename):
+    datafile = os.path.join('data', datafilename)
+    if not os.path.isfile(datafile):
+        sys.exit("Data file " + datafilename + " not found")
+    templatefile = os.path.join('templates', templatefilename)
+    if not os.path.isfile(templatefile):
+        sys.exit("Template file " + datafilename + " not found")
+    with open(templatefile, 'r') as template_fp:
+        template_lines = template_fp.readlines()
+    with open(datafile, 'rb') as data_fp:
+        for row in csv.DictReader(data_fp):
+            for line in template_lines:
+                command = line.format(**row).strip()
+                if command:
+                    step.given(command)
+                    
+    

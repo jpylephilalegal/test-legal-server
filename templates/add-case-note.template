@@ -1,0 +1,4 @@
+I open case ID {caseid}
+I click the menu link "Add Case Notes"
+I set "Body" to "{note}"
+I click the continue button
