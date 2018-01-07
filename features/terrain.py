@@ -14,6 +14,8 @@ import sys
 
 password_file = os.path.join(os.path.expanduser("~"), 'ls-passwords.yml')
 
+chromedriver = os.path.join(os.path.expanduser("~"), 'chromedriver.exe')
+
 if os.path.isfile(password_file):
     with open(password_file, 'r') as fp:
         try:
@@ -65,12 +67,12 @@ def setup_browser():
     world.passwords = password_dict
     world.password_file = password_file
     # For Firefox
-    world.browser = MyFirefox()
-    world.browser.maximize_window()
+    # world.browser = MyFirefox()
+    # world.browser.maximize_window()
     # For Chrome
-    #options = ChromeOptions()
-    #options.add_argument("--start-maximized");
-    #world.browser = MyChrome(executable_path='../chromedriver', chrome_options=options)
+    options = ChromeOptions()
+    options.add_argument("--start-maximized");
+    world.browser = MyChrome(executable_path=chromedriver, chrome_options=options)
 
 @after.all
 def tear_down(total):
