@@ -1,0 +1,71 @@
+Feature: Pro bono divorce on-line intake
+  Test that the on-line intake system for divorce is working
+
+  Scenario: Applicant is eligible and submits an application
+    I open the URL https://plaoi.legalserver.org/modules/matter/extern_intake.php?pid=71&h=9feda9&
+    Then I should see the phrase "Application for free legal assistance with divorce"
+    And I click the button "I understand"
+    Then I should see the phrase "Household Information"
+    And I set "People 18 and Over" to "1"
+    And I set "People Under 18" to "0"
+    And I click the continue button
+    Then I should see the phrase "Household income"
+    And I set the first pulldown to "Employment"
+    And I set the first text box to "200"
+    And I click the button "+"
+    And I set the second pulldown to "Child Support"
+    And I set the second text box to "400"
+    And I click "Yes" under "Do you think your income will change significantly (whether up or down) in the next three months?"
+    And I click the continue button
+    Then I should see the phrase "Residence"
+    And I set "Do you live in Philadelphia?" to "Yes"
+    Then I should see the phrase "Questions about your case"
+    And I set "Is there already a divorce case involving you and your spouse?" to "No"
+    And I set "Have you been living in Pennsylvania for the past six months?" to "Yes"
+    And I set "Are you currently living in the same house or apartment as your spouse?" to "No"
+    And I set "Have you been living in a different place from your spouse for more than two years?" to "Yes"
+    And I set "Is your spouse in prison?" to "No"
+    And I set "Do you know the address where your spouse lives?" to "Yes"
+    And I set "What is your spouse's address?" to "123 Main Street, New York, NY, 12345"
+    And I set "Do you or your spouse own any significant property, such as a house or a pension?" to "No"
+    And I set "Do you or your spouse have significant debts (e.g., mortgage, significant credit card debt)" to "No"
+    And I set "Do you and your spouse have any children together who are under the age of 18?" to "No"
+    And I set "What was the date of your marriage?" to "04/04/2010"
+    And I set "Where did the marriage take place?" to "Philadelphia, PA"
+    And I click "No" under "Is your spouse currently in the military?"
+    And I click "No" under "Has there ever been a Protection From Abuse (PFA) order against you, or against your spouse?"
+    And I click the continue button
+    Then I should see the phrase "Based on your answers to our questions, you appear to be eligible for free legal services with your divorce."
+    And I click the continue button
+    Then I should see the phrase "Contact information"
+    And I set "First Name" to "Jonathan"
+    And I set "Last Name" to "Pyle"
+    And I set "Date of Birth" to "04/01/1977"
+    And I set "Social Security Number (optional)" to "123-32-1231"
+    And I set "E-mail Address" to "jpyle@philalegal.org"
+    And I set input field "matter:phone_home" to "215-981-3843"
+    And I click "Yes" under "Can we contact you by sending a text message to your phone?"
+    And I click the continue button
+    And I set "Zip Code" to "19106"
+    And I wait 3 seconds
+    And I set "Street Address" to "718 Arch Street"
+    And I set "Apt#/Lot#" to "Suite 300N"
+    And I click the button "Save & Next"
+    Then I should see the phrase "Your spouse"
+    And I set "First Name" to "Jane"
+    And I set "Last Name" to "Doe"
+    And I click the continue button
+    And I select "English" as the "Language"
+    And I select "Male" as the "Gender"
+    And I select "White" as the "Race"
+    And I select "Apartment" as the "Living situation"
+    And I click "No" under "Veteran status"
+    And I click "No" under "Disabled"
+    And I set "Citizen of the United States?" to "No"
+    Then I should see the phrase "Immigration status currently valid?"
+    And I click "Yes" under "Immigration status currently valid?"
+    Then I should see the phrase "Ready to Submit Your Application?"
+    And I click the button "Submit »"
+    Then I should see the phrase "Submission of your application is complete."
+    And I click the button "Exit »"
+    Then I should see "https://philalegal.org/divorce#" as the URL of the page

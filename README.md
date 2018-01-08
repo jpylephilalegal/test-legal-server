@@ -185,6 +185,10 @@ in the first ("header") line of the comma-separated-values (CSV) file.
 
 The following are the types of steps you can use in your scenarios.
 
+    I open the URL <url>
+
+Navigates to the URL given by `<url>`.  E.g., `I open the URL https://google.com`.
+
     I log in to <server> as <username>
 
 Logs into Legal Server.
@@ -223,9 +227,16 @@ Clicks the "Logout" button
 Goes to the Search menu, opens "Case ID," and searches for the given
 Case ID.
 
+    I run the template "standard-start.feature"
+    
+This runs the commands in the file `standard-start.feature` in the
+`templates` folder.
+
     I run "<template file name>" using "<data file name>"
 
-For each of the rows in the data file, it runs the steps in the given template.
+For each of the rows in the data file, it runs the steps in the given
+template.  See above for an explanation of where template files and
+data files are located.
 
     I select "<option>" as the "<label>"
 
@@ -236,6 +247,28 @@ labeled `<option>`.  E.g., `I select "Massachusetts" as the "State"`
 
 For a text box labeled with the `<label>`, types in the text
 `<value>`.  E.g., "I set "Body" to "This case should be rejected as a duplicate."
+
+    I set input field "formfield323" to "04/01/2010"
+
+Sometimes, a text box does not have a label that uniquely identifies
+it.  In this circumstances, you can inspect the HTML and find the
+"name" of the text box, and then use this type of statement to fill in
+its value.
+
+    I set the second pulldown to "Female"
+    I set the fourth text box to "04/01/2010"
+
+When an input element does not have a label, you can also try
+referring to it by whether it is the first, second, third, etc. input
+element on the screen.  This only works up to the "tenth" element.
+
+    I click "Yes" under "Are you disabled?"
+
+This step was designed for the Legal Server on-line intake system and
+may not be applicable in very many other circumstances.  The example
+above will look for a `<span>` containing "Are you disabled?" and then
+will click on a `<label>` within the same encompassing `<fieldset>`
+where the `<label>` text is "Yes".
 
     I should see the phrase "<phrase>"
 
@@ -277,6 +310,8 @@ Pauses indefinitely.  This is helpful when you want to use a test to
 bring you to a specific situation, from which you can take control of
 the browser.  To stop the test, type Ctrl-c in the **Anaconda Prompt**
 window.
+
+    
 
 To add your own "step" controls, edit the file `legalserver.py` in the
 `steps` folder.

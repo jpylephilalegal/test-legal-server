@@ -13,6 +13,13 @@ import re
 import sys
 import csv
 
+counts = dict(first=1, second=2, third=3, fourth=4, fifth=5, sixth=6, seventh=7, eighth=8, ninth=9, tenth=10)
+
+@step('I open the URL "?([^"]+)"?')
+def visit_url(step, url):
+    world.browser.get(url)
+    world.browser.wait_for_it()
+
 @step('I log in to "?([^ "]+)"? as "?([^ "]+)"?')
 def login(step, server, username):
     world.da_path = 'https://' + re.sub(r'/+$', r'', server)
@@ -107,9 +114,55 @@ def see_phrase(step, phrase):
 def not_see_phrase(step, phrase):
     assert not world.browser.text_present(phrase)
 
+@step('I set input field "([^"]+)" to "([^"]*)"')
+def set_field_by_name(step, name, value):
+    elem = world.browser.find_element_by_name(name)
+    try:
+        elem.clear()
+    except:
+        pass
+    elem.send_keys(value)
+    
 @step('I set "([^"]+)" to "([^"]*)"')
 def set_field(step, label, value):
-    elem = world.browser.find_element_by_id(world.browser.find_element_by_xpath('//label[text()="' + label + '"]').get_attribute("for"))
+    found = False
+    try:
+        for lab in world.browser.find_elements_by_xpath('//label[text()="' + label + '"]'):
+            if lab.is_displayed():
+                elem = world.browser.find_element_by_id(lab.get_attribute("for"))
+                found = True
+                break
+    except:
+        pass
+    if not found:
+        for inp in world.browser.find_elements_by_xpath('//input[@placeholder="' + label + '"]'):
+            if inp.is_displayed():
+                elem = inp
+                found = True
+                break
+    assert found
+    try:
+        elem.clear()
+    except:
+        pass
+    elem.send_keys(value)
+
+@step('I set the (first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth) pulldown to "([^"]+)"')
+def nth_select(step, ordinal, value):
+    number = str(counts[ordinal])
+    elem = world.browser.find_element_by_xpath('(//select)[' + number + ']')
+    found = False
+    for option in elem.find_elements_by_tag_name('option'):
+        if option.text == value:
+            option.click()
+            found = True
+            break
+    assert found
+
+@step('I set the (first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth) text box to "([^"]+)"')
+def nth_select(step, ordinal, value):
+    number = str(counts[ordinal])
+    elem = world.browser.find_element_by_xpath('(//input[@type!="hidden" and @type!="button"])[' + number + ']')
     try:
         elem.clear()
     except:
@@ -120,7 +173,18 @@ def set_field(step, label, value):
 def submit_page(step):
     world.browser.find_element_by_xpath('//input[@type="submit" and @value="Continue »"]').click()
     world.browser.wait_for_it()
-    
+
+@step('I click "([^"]+)" under "([^"]+)"')
+def legend_click(step, value, legend):
+    fieldset = world.browser.find_element_by_xpath('//span[text()="' + legend + '"]/ancestor::fieldset')
+    found = False
+    for label in fieldset.find_elements_by_tag_name('label'):
+        if label.text == value:
+            label.click()
+            found = True
+            break
+    assert found        
+
 @step('I select "([^"]+)" as the "([^"]+)"')
 def select_option(step, value, label):
     elem = world.browser.find_element_by_id(world.browser.find_element_by_xpath('//label[text()="' + label + '"]').get_attribute("for"))
@@ -197,6 +261,18 @@ def url_of_page(step, url):
 def exit_button(step, button_name):
     world.browser.find_element_by_xpath('//button[text()="' + button_name + '"]').click()
     time.sleep(1.0)
+
+@step('I run the template "([^"]+)"')
+def run_template(step, templatefilename):
+    templatefile = os.path.join('templates', templatefilename)
+    if not os.path.isfile(templatefile):
+        sys.exit("Template file " + datafilename + " not found")
+    with open(templatefile, 'r') as template_fp:
+        template_lines = template_fp.readlines()
+    for line in template_lines:
+        command = line.strip()
+        if command:
+            step.given(command)
 
 @step('I run "([^"]+)" using "([^"]+)"')
 def template_apply(step, templatefilename, datafilename):
