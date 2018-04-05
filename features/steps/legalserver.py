@@ -96,6 +96,12 @@ def click_button(step, button_name):
     elem.click()
     world.browser.wait_for_it()
 
+@step('I click the labels "([^"]+)"')
+def click_labels(step, label_name):
+    for elem in world.browser.find_element_by_xpath('//label[text()="' + label_name + '"]')
+        elem.click()
+    world.browser.wait_for_it()
+
 @step('I click the link "([^"]+)"')
 def click_link(step, link_name):
     world.browser.find_element_by_xpath('//a[text()="' + link_name + '"]').click()
