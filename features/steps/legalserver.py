@@ -169,6 +169,16 @@ def nth_select(step, ordinal, value):
         pass
     elem.send_keys(value)
 
+@step('I set the (first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth) text area to "([^"]+)"')
+def nth_select(step, ordinal, value):
+    number = str(counts[ordinal])
+    elem = world.browser.find_element_by_xpath('(//textarea)[' + number + ']')
+    try:
+        elem.clear()
+    except:
+        pass
+    elem.send_keys(value)
+    
 @step('I click the continue button')
 def submit_page(step):
     world.browser.find_element_by_xpath('//input[@type="submit" and @value="Continue »"]').click()
