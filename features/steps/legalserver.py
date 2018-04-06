@@ -187,7 +187,7 @@ def nth_select(step, ordinal, value):
 
 @step('I click the continue button')
 def submit_page(step):
-    var elem = world.browser.find_element_by_xpath('//input[@type="submit" and @value="Continue »"]')
+    elem = world.browser.find_element_by_xpath('//input[@type="submit" and @value="Continue »"]')
     world.browser.execute_script("return arguments[0].scrollIntoView(true);", elem)
     elem.click()
     world.browser.wait_for_it()
