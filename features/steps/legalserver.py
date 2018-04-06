@@ -19,6 +19,7 @@ counts = dict(first=1, second=2, third=3, fourth=4, fifth=5, sixth=6, seventh=7,
 def visit_url(step, url):
     world.browser.get(url)
     world.browser.wait_for_it()
+    time.sleep(0.5)
 
 @step('I log in to "?([^ "]+)"? as "?([^ "]+)"?')
 def login(step, server, username):
